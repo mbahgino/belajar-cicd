@@ -1,20 +1,12 @@
-name: Robot Bersih-Bersih VM
+name: Ganti Tampilan Web Nginx
 
-# Robot ini jalan setiap kali lo klik tombol "Run" atau simpan kode
 on:
   workflow_dispatch:
 
 jobs:
-  cleaning-job:
-    runs-on: self-hosted  # Ini perintah supaya dia jalan di VM lo (mailserver)
-    
+  update-web:
+    runs-on: self-hosted
     steps:
-      - name: Cek Sisa Harddisk
-        run: df -h
-        
-      - name: Hapus Pod yang Error/Evicted
+      - name: Eksekusi Ganti Tulisan
         run: |
-          sudo kubectl delete pods --all-namespaces --field-selector status.phase=Failed || true
-          
-      - name: Cek Status Terakhir
-        run: sudo kubectl get pods -A
+          sudo kubectl exec deployment/web-belajar -- sh -c "echo '<h1>Woy Bree! Web ini berubah otomatis dari GitHub loh!</h1><p>Gokil, lo sekarang udah jadi Master CI/CD.</p>' > /usr/share/nginx/html/index.html"
