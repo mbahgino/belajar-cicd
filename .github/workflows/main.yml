@@ -1,0 +1,20 @@
+name: Robot Bersih-Bersih VM
+
+# Robot ini jalan setiap kali lo klik tombol "Run" atau simpan kode
+on:
+  workflow_dispatch:
+
+jobs:
+  cleaning-job:
+    runs-on: self-hosted  # Ini perintah supaya dia jalan di VM lo (mailserver)
+    
+    steps:
+      - name: Cek Sisa Harddisk
+        run: df -h
+        
+      - name: Hapus Pod yang Error/Evicted
+        run: |
+          sudo kubectl delete pods --all-namespaces --field-selector status.phase=Failed || true
+          
+      - name: Cek Status Terakhir
+        run: sudo kubectl get pods -A
