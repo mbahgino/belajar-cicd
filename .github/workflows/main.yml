@@ -1,4 +1,4 @@
-name: Ganti Tampilan Web Nginx
+name: Ganti Tampilan Web Nginx - Versi Galak
 
 on:
   workflow_dispatch:
@@ -7,6 +7,17 @@ jobs:
   update-web:
     runs-on: self-hosted
     steps:
-      - name: Eksekusi Ganti Tulisan
+      - name: Cari Tau Lokasi File
         run: |
-          sudo kubectl exec deployment/web-belajar -- sh -c "echo '<h1>Woy Bree! Web ini berubah otomatis dari GitHub loh!</h1><p>Gokil, lo sekarang udah jadi Master CI/CD.</p>' > /usr/share/nginx/html/index.html"
+          # Kita cek dulu Nginx lo nyimpen filenya di mana
+          sudo kubectl exec deployment/web-belajar -- ls /usr/share/nginx/html/
+          
+      - name: Paksa Ganti File Index
+        run: |
+          # Kita pake perintah 'tee' biar lebih mantap tembusnya
+          sudo kubectl exec deployment/web-belajar -- sh -c "echo '<h1>Woy Bree! Ini update ke-2. Kalo ini muncul, berarti kita sukses!</h1>' | tee /usr/share/nginx/html/index.html"
+          
+      - name: Restart Nginx di dalem Pod
+        run: |
+          # Kadang Nginx butuh disenggol biar baca file baru
+          sudo kubectl exec deployment/web-belajar -- nginx -s reload
